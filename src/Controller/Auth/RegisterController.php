@@ -13,8 +13,8 @@ final class RegisterController extends AbstractController
     #[Route('/api/v1/auth/register', name: 'api_auth_register', methods: ['POST'])]
     public function __invoke(
         Request $request,
-        // App\Controller\Auth\SerializerInterface
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        
         ): JsonResponse
     {
         return $this->json([
