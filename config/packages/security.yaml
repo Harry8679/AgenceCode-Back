@@ -10,16 +10,18 @@ security:
                 class: App\Entity\User
                 property: email
     firewalls:
+        # ⬇️ Le point d'entrée login JWT
         login:
             pattern: ^/api/v1/auth/login$
             stateless: true
             json_login:
-                check_path: /api/v1/auth/login
-                username_path: email
-                password_path: password
+                check_path: /api/v1/auth/login     # chemin écouté (pas besoin de route)
+                username_path: email               # clé JSON pour l'email
+                password_path: password            # clé JSON pour le mot de passe
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        # le reste des endpoints protégés par JWT
+
+        # ⬇️ Le reste de l'API protégé par le token
         api:
             pattern: ^/api/
             stateless: true
