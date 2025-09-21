@@ -66,7 +66,8 @@ class RegisterController extends AbstractController
             'firstName' => $user->getFirstName(),
             'lastName'  => $user->getLastName(),
             'email'     => $user->getEmail(),
-            'profile'   => $user->getProfile()->value,
+            // 'profile'   => $user->getProfile()->value,
+            'profile'   => $user->getProfile(),
             'roles'     => $user->getRoles(),
             'token'     => $token,
         ], 201);
