@@ -160,7 +160,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setProfile(UserProfile $profile): static
     {
         $this->profile = $profile;
-
+        // Rôles par défaut selon le profil
+        $this->roles = match ($profile) {
+            UserProfile::PARENT  => ['ROLE_PARENT'],
+            UserProfile::STUDENT => ['ROLE_STUDENT'],
+            UserProfile::TEACHER => ['ROLE_TEACHER'],
+        };
         return $this;
     }
 
