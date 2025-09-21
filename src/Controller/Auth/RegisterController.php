@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class RegisterController extends AbstractController
 {
-    #[Route('/auth/register', name: 'app_auth_register')]
+    #[Route('/api/v1/auth/register', name: 'api_auth_register', methods: ['POST'])]
     public function __invoke(): JsonResponse
     {
         return $this->json([
