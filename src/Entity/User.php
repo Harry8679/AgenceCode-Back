@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\UserProfile;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -38,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $profile = null;
+    private ?UserProfile $profile = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -156,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->profile;
     }
 
-    public function setProfile(string $profile): static
+    public function setProfile(UserProfile $profile): static
     {
         $this->profile = $profile;
 
