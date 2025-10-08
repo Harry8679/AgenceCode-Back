@@ -14,6 +14,10 @@ class AuthenticationSuccessListener
      */
     public function onAuthenticationSuccess(AuthenticationSuccessEvent $event): void
     {
+        $user = $event->getUser();
+    dd($user); // Inspectez l'objet User
+    
+        dd('Listener Exécuté !'); // <--- AJOUTEZ CETTE LIGNE
         // On récupère les données de la réponse actuelle (qui ne contient que le token)
         $data = $event->getData();
         
