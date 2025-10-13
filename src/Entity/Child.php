@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\ChildRepository;
+use App\Enum\ClassLevel;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ChildRepository;
 
 #[ORM\Entity(repositoryClass: ChildRepository::class)]
 class Child
@@ -22,8 +23,9 @@ class Child
     #[ORM\Column]
     private array $subjects = [];
 
-    #[ORM\Column(length: 255)]
-    private ?string $classLevel = null;
+    #[ORM\Column(length: 255, enumType: ClassLevel::class)]
+    // private ?string $classLevel = null;
+    private ?ClassLevel $classLevel = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
