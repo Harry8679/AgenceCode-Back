@@ -37,6 +37,11 @@ class Child
     #[ORM\JoinColumn(nullable: false)]
     private ?User $parent = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -83,7 +88,7 @@ class Child
         return $this->classLevel;
     }
 
-    public function setClassLevel(string $classLevel): static
+    public function setClassLevel(ClassLevel $classLevel): static
     {
         $this->classLevel = $classLevel;
 
