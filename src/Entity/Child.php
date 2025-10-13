@@ -31,6 +31,10 @@ class Child
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'children')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $parent = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +108,18 @@ class Child
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getParent(): ?User
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?User $parent): static
+    {
+        $this->parent = $parent;
 
         return $this;
     }
