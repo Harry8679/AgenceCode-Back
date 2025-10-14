@@ -14,9 +14,9 @@ class AdminUserFixtures extends Fixture
     public function load(ObjectManager $em): void
     {
         $u = (new User())
-            ->setEmail('admin@example.com')
-            ->setFirstName('Admin')
-            ->setLastName('User')
+            ->setEmail('xavi.lamachine@gmail.com')
+            ->setFirstName('Xavi')
+            ->setLastName('La Machine')
             ->setProfile(UserProfile::ADMIN)        // 👈
             ->setRoles(['ROLE_ADMIN','ROLE_USER']); // optionnel
 
