@@ -34,6 +34,10 @@ class Child
     #[ORM\JoinColumn(nullable: false)]
     private ?User $parent = null;
 
+    #[ORM\ManyToOne(inversedBy: 'children')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Subject $subjects = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -112,6 +116,18 @@ class Child
     public function setParent(?User $parent): static
     {
         $this->parent = $parent;
+
+        return $this;
+    }
+
+    public function getSubjects(): ?Subject
+    {
+        return $this->subjects;
+    }
+
+    public function setSubjects(?Subject $subjects): static
+    {
+        $this->subjects = $subjects;
 
         return $this;
     }
