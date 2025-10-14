@@ -93,6 +93,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             UserProfile::PARENT  => ['ROLE_PARENT'],
             UserProfile::STUDENT => ['ROLE_STUDENT'],
             UserProfile::TEACHER => ['ROLE_TEACHER'],
+            UserProfile::ADMIN   => ['ROLE_ADMIN'], // utilisé seulement via fixtures/commande
         };
         return $this;
     }
