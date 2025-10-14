@@ -20,9 +20,6 @@ class Child
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column]
-    private array $subjects = [];
-
     #[ORM\Column(length: 255, enumType: ClassLevel::class)]
     // private ?string $classLevel = null;
     private ?ClassLevel $classLevel = null;
@@ -67,18 +64,6 @@ class Child
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    public function getSubjects(): array
-    {
-        return $this->subjects;
-    }
-
-    public function setSubjects(array $subjects): static
-    {
-        $this->subjects = $subjects;
 
         return $this;
     }
