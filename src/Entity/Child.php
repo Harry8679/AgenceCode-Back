@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use App\Enum\ClassLevel;
-use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChildRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ChildRepository::class)]
 class Child
@@ -20,8 +22,7 @@ class Child
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 255, enumType: ClassLevel::class)]
-    // private ?string $classLevel = null;
+    #[ORM\Column(enumType: ClassLevel::class)]
     private ?ClassLevel $classLevel = null;
 
     #[ORM\Column]
@@ -34,13 +35,15 @@ class Child
     #[ORM\JoinColumn(nullable: false)]
     private ?User $parent = null;
 
-    #[ORM\ManyToOne(inversedBy: 'children')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Subject $subjects = null;
+    /** @var Collection<int, Subject> */
+    #[ORM\ManyToMany(targetEntity: Subject::class, inversedBy: 'children')]
+    #[ORM\JoinTable(name: 'child_subject')]
+    private Collection $subjects;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->subjects  = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,7 +59,6 @@ class Child
     public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
-
         return $this;
     }
 
@@ -68,11 +70,10 @@ class Child
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
-
         return $this;
     }
 
-    public function getClassLevel(): ?string
+    public function getClassLevel(): ?ClassLevel
     {
         return $this->classLevel;
     }
@@ -80,7 +81,6 @@ class Child
     public function setClassLevel(ClassLevel $classLevel): static
     {
         $this->classLevel = $classLevel;
-
         return $this;
     }
 
@@ -92,7 +92,6 @@ class Child
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -104,7 +103,6 @@ class Child
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
 
@@ -116,19 +114,26 @@ class Child
     public function setParent(?User $parent): static
     {
         $this->parent = $parent;
-
         return $this;
     }
 
-    public function getSubjects(): ?Subject
+    /** @return Collection<int, Subject> */
+    public function getSubjects(): Collection
     {
         return $this->subjects;
     }
 
-    public function setSubjects(?Subject $subjects): static
+    public function addSubject(Subject $subject): static
     {
-        $this->subjects = $subjects;
+        if (!$this->subjects->contains($subject)) {
+            $this->subjects->add($subject);
+        }
+        return $this;
+    }
 
+    public function removeSubject(Subject $subject): static
+    {
+        $this->subjects->removeElement($subject);
         return $this;
     }
 }
