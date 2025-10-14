@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_subject_name', fields: ['name'])]
+#[ORM\UniqueConstraint(name: 'uniq_subject_slug', fields: ['slug'])]
 class Subject
 {
     #[ORM\Id]
@@ -21,10 +23,8 @@ class Subject
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
-    /**
-     * @var Collection<int, Child>
-     */
-    #[ORM\OneToMany(targetEntity: Child::class, mappedBy: 'subjects')]
+    /** @var Collection<int, Child> */
+    #[ORM\ManyToMany(targetEntity: Child::class, mappedBy: 'subjects')]
     private Collection $children;
 
     public function __construct()
@@ -45,7 +45,6 @@ class Subject
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -57,13 +56,10 @@ class Subject
     public function setSlug(string $slug): static
     {
         $this->slug = $slug;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Child>
-     */
+    /** @return Collection<int, Child> */
     public function getChildren(): Collection
     {
         return $this->children;
@@ -73,21 +69,16 @@ class Subject
     {
         if (!$this->children->contains($child)) {
             $this->children->add($child);
-            $child->setSubjects($this);
+            $child->addSubject($this);
         }
-
         return $this;
     }
 
     public function removeChild(Child $child): static
     {
         if ($this->children->removeElement($child)) {
-            // set the owning side to null (unless already changed)
-            if ($child->getSubjects() === $this) {
-                $child->setSubjects(null);
-            }
+            $child->removeSubject($this);
         }
-
         return $this;
     }
 }
