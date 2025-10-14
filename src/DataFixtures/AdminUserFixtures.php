@@ -1,17 +1,28 @@
 <?php
 
-namespace App\DataFixtures;
-
+// src/DataFixtures/AdminUserFixtures.php
+use App\Entity\User;
+use App\Enum\UserProfile;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AdminUserFixtures extends Fixture
 {
-    public function load(ObjectManager $manager): void
-    {
-        // $product = new Product();
-        // $manager->persist($product);
+    public function __construct(private UserPasswordHasherInterface $hasher) {}
 
-        $manager->flush();
+    public function load(ObjectManager $em): void
+    {
+        $u = (new User())
+            ->setEmail('admin@example.com')
+            ->setFirstName('Admin')
+            ->setLastName('User')
+            ->setProfile(UserProfile::ADMIN)        // 👈
+            ->setRoles(['ROLE_ADMIN','ROLE_USER']); // optionnel
+
+        $u->setPassword($this->hasher->hashPassword($u, 'Azerty123'));
+
+        $em->persist($u);
+        $em->flush();
     }
 }
