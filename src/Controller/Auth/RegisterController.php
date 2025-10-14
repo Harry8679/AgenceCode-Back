@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RegisterController extends AbstractController
+final class RegisterController extends AbstractController
 {
     #[Route('/api/v1/auth/register', name: 'api_auth_register', methods: ['POST'])]
     public function __invoke(
@@ -27,26 +27,44 @@ class RegisterController extends AbstractController
         UserPasswordHasherInterface $hasher,
         JWTTokenManagerInterface $jwt
     ): JsonResponse {
-        // 1) Désérialiser
         /** @var RegisterDto $dto */
         $dto = $serializer->deserialize($request->getContent(), RegisterDto::class, 'json');
 
-        // 2) Valider DTO
+        // 1) Validation du DTO
         $errors = $validator->validate($dto);
-        if (count($errors) > 0) {
-            $errorsOut = [];
+        if (\count($errors) > 0) {
+            $out = [];
             foreach ($errors as $e) {
-                $errorsOut[] = ['field' => $e->getPropertyPath(), 'message' => $e->getMessage()];
+                $out[] = ['field' => $e->getPropertyPath(), 'message' => $e->getMessage()];
             }
-            return $this->json(['message' => 'Invalid payload', 'errors' => $errorsOut], 422);
+            return $this->json(['message' => 'Invalid payload', 'errors' => $out], 422);
         }
 
-        // 3) Créer l’utilisateur
+        // 2) Normalisation et contrôle du profil
+        //    - on accepte "parent|student|teacher|admin" insensible à la casse
+        //    - on refuse ADMIN sur l’endpoint public
+        try {
+            $rawProfile = \strtoupper(\trim($dto->profile));
+            $profile    = UserProfile::from($rawProfile);
+        } catch (\ValueError) {
+            return $this->json([
+                'message' => 'Profil invalide. Valeurs autorisées: PARENT, STUDENT, TEACHER.'
+            ], 422);
+        }
+
+        if ($profile === UserProfile::ADMIN) {
+            // garde-fou contre l’élévation de privilèges à l’inscription publique
+            return $this->json([
+                'message' => 'Création d’un compte ADMIN interdite via l’inscription publique.'
+            ], 403);
+        }
+
+        // 3) Création de l’utilisateur (les rôles seront dérivés du profil dans setProfile)
         $user = (new User())
-            ->setFirstName(trim($dto->firstName))
-            ->setLastName(trim($dto->lastName))
-            ->setEmail(strtolower(trim($dto->email)))
-            ->setProfile(UserProfile::from($dto->profile));
+            ->setFirstName(\trim($dto->firstName))
+            ->setLastName(\trim($dto->lastName))
+            ->setEmail(\strtolower(\trim($dto->email)))
+            ->setProfile($profile);
 
         $user->setPassword($hasher->hashPassword($user, $dto->password));
 
@@ -57,7 +75,7 @@ class RegisterController extends AbstractController
             return $this->json(['message' => 'Email déjà utilisé.'], 409);
         }
 
-        // 4) Générer un JWT pour login immédiat
+        // 4) JWT pour login immédiat
         $token = $jwt->create($user);
 
         // 5) Réponse
@@ -66,8 +84,7 @@ class RegisterController extends AbstractController
             'firstName' => $user->getFirstName(),
             'lastName'  => $user->getLastName(),
             'email'     => $user->getEmail(),
-            // 'profile'   => $user->getProfile()->value,
-            'profile'   => $user->getProfile(),
+            'profile'   => $user->getProfile()->value, // renvoie "PARENT|STUDENT|TEACHER"
             'roles'     => $user->getRoles(),
             'token'     => $token,
         ], 201);
