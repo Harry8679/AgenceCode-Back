@@ -25,6 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ]
 )]
 #[API\ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial', 'slug' => 'exact'])]
+#[ORM\HasLifecycleCallbacks] // 👈 important
 class Subject
 {
     #[ORM\Id]
