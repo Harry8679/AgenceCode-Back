@@ -2,25 +2,43 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata as API;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\SubjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_subject_name', fields: ['name'])]
 #[ORM\UniqueConstraint(name: 'uniq_subject_slug', fields: ['slug'])]
+#[API\ApiResource(
+    normalizationContext: ['groups' => ['subject:read']],
+    denormalizationContext: ['groups' => ['subject:write']],
+    operations: [
+        new API\GetCollection(),                                 // public
+        new API\Post(security: "is_granted('ROLE_ADMIN')"),      // admin only
+        new API\Get(),                                           // public
+        new API\Patch(security: "is_granted('ROLE_ADMIN')"),
+        new API\Delete(security: "is_granted('ROLE_ADMIN')"),
+    ]
+)]
+#[API\ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial', 'slug' => 'exact'])]
 class Subject
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['subject:read','child:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['subject:read','subject:write','child:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['subject:read','subject:write'])]
     private ?string $slug = null;
 
     /** @var Collection<int, Child> */
