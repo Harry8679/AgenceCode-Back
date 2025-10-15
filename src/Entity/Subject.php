@@ -50,6 +50,18 @@ class Subject
         $this->children = new ArrayCollection();
     }
 
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function ensureSlug(): void
+    {
+        if (!$this->name) {
+            return;
+        }
+        if (!$this->slug || $this->slug === '') {
+            $this->slug = strtolower((new AsciiSlugger())->slug($this->name));
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
