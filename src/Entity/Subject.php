@@ -17,7 +17,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 #[API\ApiResource(
     normalizationContext: ['groups' => ['subject:read']],
     denormalizationContext: ['groups' => ['subject:write']],
-    operations: [new API\GetCollection(),                                 // public
+    operations: [
+        new API\GetCollection(),                                 // public
         new API\Post(security: "is_granted('ROLE_ADMIN')"),      // admin only
         new API\Get(),                                           // public
         new API\Patch(security: "is_granted('ROLE_ADMIN')"),
