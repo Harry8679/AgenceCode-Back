@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CouponRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Api\Provider\MyCouponsProvider;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -15,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
   operations: [
     // Liste des coupons du parent connecté (Provider)
     new GetCollection(
-      provider: App\Api\Provider\MyCouponsProvider::class,
+      provider: MyCouponsProvider::class,
       security: "is_granted('ROLE_PARENT')"
     ),
     // Lecture d’un coupon si c’est son enfant
