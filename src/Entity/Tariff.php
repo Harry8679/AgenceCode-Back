@@ -28,6 +28,9 @@ class Tariff
     #[ORM\Column]
     private ?int $priceCent = null;
 
+    #[ORM\Column]
+    private ?bool $isActive = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,6 +80,18 @@ class Tariff
     public function setPriceCent(int $priceCent): static
     {
         $this->priceCent = $priceCent;
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
