@@ -53,10 +53,17 @@ class Subject
     #[ORM\OneToMany(targetEntity: Tariff::class, mappedBy: 'subject')]
     private Collection $tariffs;
 
+    /**
+     * @var Collection<int, Coupon>
+     */
+    #[ORM\OneToMany(targetEntity: Coupon::class, mappedBy: 'subject')]
+    private Collection $coupons;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->tariffs = new ArrayCollection();
+        $this->coupons = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -145,6 +152,36 @@ class Subject
             // set the owning side to null (unless already changed)
             if ($tariff->getSubject() === $this) {
                 $tariff->setSubject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Coupon>
+     */
+    public function getCoupons(): Collection
+    {
+        return $this->coupons;
+    }
+
+    public function addCoupon(Coupon $coupon): static
+    {
+        if (!$this->coupons->contains($coupon)) {
+            $this->coupons->add($coupon);
+            $coupon->setSubject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCoupon(Coupon $coupon): static
+    {
+        if ($this->coupons->removeElement($coupon)) {
+            // set the owning side to null (unless already changed)
+            if ($coupon->getSubject() === $this) {
+                $coupon->setSubject(null);
             }
         }
 

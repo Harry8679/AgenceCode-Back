@@ -71,10 +71,17 @@ class Child
     #[Groups(['child:read','child:write'])]   // on poste des IDs de Subject
     private Collection $subjects;
 
+    /**
+     * @var Collection<int, Coupon>
+     */
+    #[ORM\OneToMany(targetEntity: Coupon::class, mappedBy: 'child')]
+    private Collection $coupons;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->subjects  = new ArrayCollection();
+        $this->coupons = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -165,6 +172,36 @@ class Child
     public function removeSubject(Subject $subject): static
     {
         $this->subjects->removeElement($subject);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Coupon>
+     */
+    public function getCoupons(): Collection
+    {
+        return $this->coupons;
+    }
+
+    public function addCoupon(Coupon $coupon): static
+    {
+        if (!$this->coupons->contains($coupon)) {
+            $this->coupons->add($coupon);
+            $coupon->setChild($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCoupon(Coupon $coupon): static
+    {
+        if ($this->coupons->removeElement($coupon)) {
+            // set the owning side to null (unless already changed)
+            if ($coupon->getChild() === $this) {
+                $coupon->setChild(null);
+            }
+        }
+
         return $this;
     }
 }
