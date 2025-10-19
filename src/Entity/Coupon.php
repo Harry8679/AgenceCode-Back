@@ -2,14 +2,27 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use App\Repository\CouponRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Get;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CouponRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
-#[ApiResource]
+#[ApiResource(
+  operations: [
+    // Liste des coupons du parent connecté (Provider)
+    new GetCollection(
+      provider: App\Api\Provider\MyCouponsProvider::class,
+      security: "is_granted('ROLE_PARENT')"
+    ),
+    // Lecture d’un coupon si c’est son enfant
+    new Get(security: "is_granted('ROLE_PARENT') and object.getChild().getParent() == user"),
+  ],
+  normalizationContext: ['groups'=>['coupon:read']]
+)]
 class Coupon
 {
     #[ORM\Id]
