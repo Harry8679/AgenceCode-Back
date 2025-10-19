@@ -47,9 +47,16 @@ class Subject
     #[ORM\ManyToMany(targetEntity: Child::class, mappedBy: 'subjects')]
     private Collection $children;
 
+    /**
+     * @var Collection<int, Tariff>
+     */
+    #[ORM\OneToMany(targetEntity: Tariff::class, mappedBy: 'subject')]
+    private Collection $tariffs;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -111,6 +118,36 @@ class Subject
         if ($this->children->removeElement($child)) {
             $child->removeSubject($this);
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tariff>
+     */
+    public function getTariffs(): Collection
+    {
+        return $this->tariffs;
+    }
+
+    public function addTariff(Tariff $tariff): static
+    {
+        if (!$this->tariffs->contains($tariff)) {
+            $this->tariffs->add($tariff);
+            $tariff->setSubject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTariff(Tariff $tariff): static
+    {
+        if ($this->tariffs->removeElement($tariff)) {
+            // set the owning side to null (unless already changed)
+            if ($tariff->getSubject() === $this) {
+                $tariff->setSubject(null);
+            }
+        }
+
         return $this;
     }
 }
