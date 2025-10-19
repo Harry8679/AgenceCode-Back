@@ -23,9 +23,6 @@ class Tariff
     private ?Subject $subject = null;
 
     #[ORM\Column]
-    private ?int $duration = null;
-
-    #[ORM\Column]
     private ?int $priceCent = null;
 
     #[ORM\Column]
@@ -56,18 +53,6 @@ class Tariff
     public function setSubject(?Subject $subject): static
     {
         $this->subject = $subject;
-
-        return $this;
-    }
-
-    public function getDuration(): ?int
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(int $duration): static
-    {
-        $this->duration = $duration;
 
         return $this;
     }
