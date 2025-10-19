@@ -28,6 +28,9 @@ class Tariff
     #[ORM\Column]
     private ?bool $isActive = null;
 
+    #[ORM\Column]
+    private ?int $durationMinutes = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,6 +80,18 @@ class Tariff
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getDurationMinutes(): ?int
+    {
+        return $this->durationMinutes;
+    }
+
+    public function setDurationMinutes(int $durationMinutes): static
+    {
+        $this->durationMinutes = $durationMinutes;
 
         return $this;
     }
