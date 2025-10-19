@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CouponRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
@@ -42,6 +44,17 @@ class Coupon
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastUsedAt = null;
+
+    /**
+     * @var Collection<int, CouponUsage>
+     */
+    #[ORM\OneToMany(targetEntity: CouponUsage::class, mappedBy: 'coupon')]
+    private Collection $couponUsages;
+
+    public function __construct()
+    {
+        $this->couponUsages = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -152,6 +165,36 @@ class Coupon
     public function setLastUsedAt(?\DateTimeImmutable $lastUsedAt): static
     {
         $this->lastUsedAt = $lastUsedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CouponUsage>
+     */
+    public function getCouponUsages(): Collection
+    {
+        return $this->couponUsages;
+    }
+
+    public function addCouponUsage(CouponUsage $couponUsage): static
+    {
+        if (!$this->couponUsages->contains($couponUsage)) {
+            $this->couponUsages->add($couponUsage);
+            $couponUsage->setCoupon($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCouponUsage(CouponUsage $couponUsage): static
+    {
+        if ($this->couponUsages->removeElement($couponUsage)) {
+            // set the owning side to null (unless already changed)
+            if ($couponUsage->getCoupon() === $this) {
+                $couponUsage->setCoupon(null);
+            }
+        }
 
         return $this;
     }

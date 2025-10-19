@@ -52,11 +52,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Child::class, mappedBy: 'parent')]
     private Collection $children;
 
+    /**
+     * @var Collection<int, CouponUsage>
+     */
+    #[ORM\OneToMany(targetEntity: CouponUsage::class, mappedBy: 'teacher')]
+    private Collection $couponUsages;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable(); // ✅ évite le NOT NULL
         $this->roles = [];                           // par défaut
         $this->children = new ArrayCollection();
+        $this->couponUsages = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -138,6 +145,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($child->getParent() === $this) {
                 $child->setParent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CouponUsage>
+     */
+    public function getCouponUsages(): Collection
+    {
+        return $this->couponUsages;
+    }
+
+    public function addCouponUsage(CouponUsage $couponUsage): static
+    {
+        if (!$this->couponUsages->contains($couponUsage)) {
+            $this->couponUsages->add($couponUsage);
+            $couponUsage->setTeacher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCouponUsage(CouponUsage $couponUsage): static
+    {
+        if ($this->couponUsages->removeElement($couponUsage)) {
+            // set the owning side to null (unless already changed)
+            if ($couponUsage->getTeacher() === $this) {
+                $couponUsage->setTeacher(null);
             }
         }
 
