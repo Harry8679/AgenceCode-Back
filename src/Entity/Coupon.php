@@ -19,7 +19,7 @@ use Doctrine\Common\Collections\ArrayCollection;
     // Liste des coupons du parent connecté (Provider)
     new GetCollection(
       // provider: MyCouponsProvider::class,
-    //   provider: MyCouponsProvider::class,
+      provider: MyCouponsProvider::class,
       security: "is_granted('ROLE_PARENT')"
     ),
     // Lecture d’un coupon si c’est son enfant
