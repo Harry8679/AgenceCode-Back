@@ -18,7 +18,6 @@ use Doctrine\Common\Collections\ArrayCollection;
   operations: [
     // Liste des coupons du parent connecté (Provider)
     new GetCollection(
-      // provider: MyCouponsProvider::class,
       provider: MyCouponsProvider::class,
       security: "is_granted('ROLE_PARENT')"
     ),
