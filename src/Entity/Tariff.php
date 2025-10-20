@@ -2,112 +2,79 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Delete;
-use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata as API;
 use App\Repository\TariffRepository;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TariffRepository::class)]
-#[ApiResource(
-  operations: [
-    new GetCollection(),
-    new Get(),
-    new Post(security: "is_granted('ROLE_ADMIN')"),
-    new Patch(security: "is_granted('ROLE_ADMIN')"),
-    new Delete(security: "is_granted('ROLE_ADMIN')"),
-  ],
-  normalizationContext: ['groups'=>['tariff:read']],
-  denormalizationContext: ['groups'=>['tariff:write']],
+#[ORM\UniqueConstraint(name: 'uniq_tariff_combo', columns: ['subject_id','class_level','duration_minutes'])]
+#[API\ApiResource(
+    operations: [
+        new API\GetCollection(),
+        new API\Get(),
+        new API\Post(security: "is_granted('ROLE_ADMIN')"),
+        new API\Patch(security: "is_granted('ROLE_ADMIN')"),
+        new API\Delete(security: "is_granted('ROLE_ADMIN')"),
+    ],
+    normalizationContext: ['groups' => ['tariff:read']],
+    denormalizationContext: ['groups' => ['tariff:write']],
 )]
 class Tariff
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['tariff:read'])]
     private ?int $id = null;
 
+    // tu peux convertir plus tard en enum si tu veux
     #[ORM\Column(length: 255)]
+    #[Groups(['tariff:read','tariff:write'])]
     private ?string $classLevel = null;
 
     #[ORM\ManyToOne(inversedBy: 'tariffs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['tariff:read','tariff:write'])]
     private ?Subject $subject = null;
 
-    #[ORM\Column]
-    private ?int $priceCent = null;
+    // prix en centimes AVANT crédit d’impôt
+    #[ORM\Column(options: ['unsigned' => true])]
+    #[Groups(['tariff:read','tariff:write'])]
+    private ?int $priceCentsBeforeCredit = null;
 
-    #[ORM\Column]
-    private ?bool $isActive = null;
+    // prix en centimes APRÈS crédit d’impôt
+    #[ORM\Column(options: ['unsigned' => true])]
+    #[Groups(['tariff:read','tariff:write'])]
+    private ?int $priceCentsAfterCredit = null;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['unsigned' => true])]
+    #[Groups(['tariff:read','tariff:write'])]
     private ?int $durationMinutes = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column]
+    #[Groups(['tariff:read','tariff:write'])]
+    private bool $isActive = true;
 
-    public function getClassLevel(): ?string
-    {
-        return $this->classLevel;
-    }
+    // --- getters/setters ---
 
-    public function setClassLevel(string $classLevel): static
-    {
-        $this->classLevel = $classLevel;
+    public function getId(): ?int { return $this->id; }
 
-        return $this;
-    }
+    public function getClassLevel(): ?string { return $this->classLevel; }
+    public function setClassLevel(string $classLevel): static { $this->classLevel = $classLevel; return $this; }
 
-    public function getSubject(): ?Subject
-    {
-        return $this->subject;
-    }
+    public function getSubject(): ?Subject { return $this->subject; }
+    public function setSubject(?Subject $subject): static { $this->subject = $subject; return $this; }
 
-    public function setSubject(?Subject $subject): static
-    {
-        $this->subject = $subject;
+    public function getPriceCentsBeforeCredit(): ?int { return $this->priceCentsBeforeCredit; }
+    public function setPriceCentsBeforeCredit(int $cents): static { $this->priceCentsBeforeCredit = $cents; return $this; }
 
-        return $this;
-    }
+    public function getPriceCentsAfterCredit(): ?int { return $this->priceCentsAfterCredit; }
+    public function setPriceCentsAfterCredit(int $cents): static { $this->priceCentsAfterCredit = $cents; return $this; }
 
-    public function getPriceCent(): ?int
-    {
-        return $this->priceCent;
-    }
+    public function getDurationMinutes(): ?int { return $this->durationMinutes; }
+    public function setDurationMinutes(int $minutes): static { $this->durationMinutes = $minutes; return $this; }
 
-    public function setPriceCent(int $priceCent): static
-    {
-        $this->priceCent = $priceCent;
-
-        return $this;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    public function getDurationMinutes(): ?int
-    {
-        return $this->durationMinutes;
-    }
-
-    public function setDurationMinutes(int $durationMinutes): static
-    {
-        $this->durationMinutes = $durationMinutes;
-
-        return $this;
-    }
+    public function isActive(): bool { return $this->isActive; }
+    public function setIsActive(bool $active): static { $this->isActive = $active; return $this; }
 }
