@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CouponRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\Api\Provider\MyCouponsProvider;
 use App\Enum\ClassLevel;
+use App\Enum\CouponStatus;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -53,8 +53,10 @@ class Coupon
     #[ORM\Column]
     private ?int $remainingMinutes = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    // #[ORM\Column(length: 255)]
+    // private ?string $status = null;
+    #[ORM\Column(enumType: CouponStatus::class)]
+    private ?CouponStatus $status = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $purchasedAt = null;
@@ -119,7 +121,7 @@ class Coupon
         return $this->classLevel;
     }
 
-    public function setClassLevel(string $classLevel): static
+    public function setClassLevel(ClassLevel $classLevel): static
     {
         $this->classLevel = $classLevel;
 
