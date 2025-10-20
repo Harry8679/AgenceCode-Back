@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CouponRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Api\Provider\MyCouponsProvider;
 use App\Enum\ClassLevel;
 use App\Enum\CouponStatus;
 use Doctrine\Common\Collections\Collection;
@@ -17,8 +18,8 @@ use Doctrine\Common\Collections\ArrayCollection;
   operations: [
     // Liste des coupons du parent connecté (Provider)
     new GetCollection(
+      // provider: MyCouponsProvider::class,
     //   provider: MyCouponsProvider::class,
-    provider: MyCo
       security: "is_granted('ROLE_PARENT')"
     ),
     // Lecture d’un coupon si c’est son enfant
