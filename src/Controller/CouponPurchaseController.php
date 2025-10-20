@@ -1,7 +1,6 @@
-// src/Controller/CouponPurchaseController.php
 <?php
 
-namespace App\Controller;   // ⬅️ corrige ici
+namespace App\Controller;
 
 use App\Entity\Coupon;
 use App\Entity\Child;
