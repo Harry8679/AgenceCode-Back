@@ -36,6 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
+    #[ORM\Column(options:['default'=>false])]
+    private bool $isTaxCreditEligible = false;
+
     // ✅ on mappe bien l'enum
     #[ORM\Column(type: 'string', enumType: UserProfile::class)]
     private ?UserProfile $profile = null;
@@ -180,4 +183,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function isTaxCreditEligible(): bool { return $this->isTaxCreditEligible; }
+    public function setIsTaxCreditEligible(bool $v): self { $this->isTaxCreditEligible = $v; return $this; }
 }
