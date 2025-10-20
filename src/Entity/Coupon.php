@@ -8,6 +8,7 @@ use App\Repository\CouponRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Api\Provider\MyCouponsProvider;
+use App\Enum\ClassLevel;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -41,8 +42,10 @@ class Coupon
     #[ORM\JoinColumn(nullable: false)]
     private ?Subject $subject = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $classLevel = null;
+    // #[ORM\Column(length: 255)]
+    // private ?string $classLevel = null;
+    #[ORM\Column(enumType: ClassLevel::class)]
+    private ?ClassLevel $classLevel = null;
 
     #[ORM\Column]
     private ?int $durationMinutes = null;
