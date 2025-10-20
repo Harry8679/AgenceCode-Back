@@ -35,6 +35,12 @@ final class CouponPurchaseController extends AbstractController
         $child   = $em->getRepository(Child::class)->find($childId);
         $subject = $em->getRepository(Subject::class)->find($subjectId);
 
+        $parent = $this->getUser();
+
+        $unit = $parent->isTaxCreditEligible()
+            ? $tariff->getPriceCentsAfterCredit()
+            : $tariff->getPriceCentsBeforeCredit();
+
         if (!$child || !$subject) {
             return $this->json(['message' => 'child/subject invalide'], 400);
         }
