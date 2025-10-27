@@ -41,7 +41,7 @@ final class ProfileController extends AbstractController
         $data = json_decode($req->getContent(), true) ?? [];
         if (isset($data['firstName'])) $u->setFirstName(trim((string)$data['firstName']));
         if (isset($data['lastName']))  $u->setLastName(trim((string)$data['lastName']));
-        if (isset($data['phone']) && method_exists($u, 'setPhone')) $u->setPhone(trim((string)$data['phone']));
+        if (isset($data['phone']) && method_exists($u, 'setPhone')) $u->setPhoneNumber(trim((string)$data['phone']));
 
         $em->flush();
         return $this->json(['message' => 'ok']);
