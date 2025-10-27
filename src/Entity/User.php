@@ -61,6 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: CouponUsage::class, mappedBy: 'teacher')]
     private Collection $couponUsages;
 
+    #[ORM\Column(length: 255)]
+    private ?string $phoneNumber = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable(); // ✅ évite le NOT NULL
@@ -186,4 +189,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isTaxCreditEligible(): bool { return $this->isTaxCreditEligible; }
     public function setIsTaxCreditEligible(bool $v): self { $this->isTaxCreditEligible = $v; return $this; }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(string $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
 }
