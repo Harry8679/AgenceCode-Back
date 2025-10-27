@@ -26,7 +26,7 @@ final class ProfileController extends AbstractController
             'email'     => $u->getEmail(),
             'firstName' => $u->getFirstName(),
             'lastName'  => $u->getLastName(),
-            'phone'     => method_exists($u, 'getPhone') ? $u->getP : null,
+            'phone'     => method_exists($u, 'getPhone') ? $u->getPhoneNumber() : null,
             'profile'   => method_exists($u, 'getProfile') ? $u->getProfile() : null,
             'roles'     => $u->getRoles(),
         ]);
