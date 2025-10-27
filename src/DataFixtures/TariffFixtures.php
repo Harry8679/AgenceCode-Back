@@ -4,17 +4,14 @@ namespace App\DataFixtures;
 
 use App\Entity\Tariff;
 use App\Entity\Subject;
-// ← dé-commente si tu utilises l'Enum côté Tariff
-// use App\Enum\ClassLevel;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\FixtureGroupInterface;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface; // ← ICI
 use Doctrine\Persistence\ObjectManager;
 
 class TariffFixtures extends Fixture implements FixtureGroupInterface
 {
     public static function getGroups(): array
     {
-        // Permet d’exécuter uniquement ce groupe si tu veux
         return ['tariffs'];
     }
 
@@ -23,7 +20,6 @@ class TariffFixtures extends Fixture implements FixtureGroupInterface
         $subjectRepo = $manager->getRepository(Subject::class);
         $tariffRepo  = $manager->getRepository(Tariff::class);
 
-        // Ta grille demandée (tu peux en ajouter d’autres lignes ici)
         $rows = [
             ['classLevel' => '6e', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
             ['classLevel' => '6e', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
@@ -34,12 +30,10 @@ class TariffFixtures extends Fixture implements FixtureGroupInterface
         foreach ($rows as $r) {
             $subject = $subjectRepo->findOneBy(['name' => $r['subjectName']]);
             if (!$subject) {
-                // Si la matière n'existe pas, on passe (ou lève une exception si tu préfères)
-                // throw new \RuntimeException("Subject not found: {$r['subjectName']}");
+                // Tu peux throw si tu préfères
                 continue;
             }
 
-            // Cherche s'il existe déjà un tarif identique (clé fonctionnelle)
             $existing = $tariffRepo->findOneBy([
                 'classLevel'      => $r['classLevel'],
                 'subject'         => $subject,
@@ -47,7 +41,6 @@ class TariffFixtures extends Fixture implements FixtureGroupInterface
             ]);
 
             if ($existing) {
-                // Mise à jour si déjà présent
                 $existing
                     ->setPriceCentsBeforeCredit($r['before'])
                     ->setPriceCentsAfterCredit($r['after'])
@@ -55,22 +48,23 @@ class TariffFixtures extends Fixture implements FixtureGroupInterface
                 continue;
             }
 
-            $tariff = new Tariff();
-
-            // --- Si Tariff::$classLevel est une STRING ---
-            $tariff->setClassLevel($r['classLevel']);
-
-            // --- Si Tariff::$classLevel est un ENUM, utilise plutôt : ---
-            // $tariff->setClassLevel(ClassLevel::SIXIEME);
-
-            $tariff
+            (new Tariff())
+                ->setClassLevel($r['classLevel'])
                 ->setSubject($subject)
                 ->setDurationMinutes($r['duration'])
                 ->setPriceCentsBeforeCredit($r['before'])
                 ->setPriceCentsAfterCredit($r['after'])
-                ->setIsActive($r['active']);
-
-            $manager->persist($tariff);
+                ->setIsActive($r['active'])
+            ;
+            $manager->persist($subject); // pas nécessaire
+            $manager->persist((new Tariff())
+                ->setClassLevel($r['classLevel'])
+                ->setSubject($subject)
+                ->setDurationMinutes($r['duration'])
+                ->setPriceCentsBeforeCredit($r['before'])
+                ->setPriceCentsAfterCredit($r['after'])
+                ->setIsActive($r['active'])
+            );
         }
 
         $manager->flush();
