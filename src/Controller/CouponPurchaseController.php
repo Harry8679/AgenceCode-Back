@@ -52,7 +52,7 @@ final class CouponPurchaseController extends AbstractController
         // Grille tarifaire : (classLevel, subject, duration, actif)
         /** @var Tariff|null $tariff */
         $tariff = $em->getRepository(Tariff::class)->findOneBy([
-            'classLevel'      => $child->getClassLevel(),   // si enum: même type ici
+            'classLevel'      => $child->getClassLevel()->value,   // si enum: même type ici
             'subject'         => $subject,
             'durationMinutes' => $duration,
             'isActive'        => true,
