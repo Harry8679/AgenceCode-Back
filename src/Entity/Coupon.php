@@ -117,7 +117,7 @@ class Coupon
         return $this;
     }
 
-    public function getClassLevel(): ?string
+    public function getClassLevel(): ?ClassLevel
     {
         return $this->classLevel;
     }
