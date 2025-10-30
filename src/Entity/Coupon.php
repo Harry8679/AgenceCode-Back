@@ -153,7 +153,7 @@ class Coupon
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?CouponStatus
     {
         return $this->status;
     }
