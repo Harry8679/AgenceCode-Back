@@ -49,10 +49,9 @@ final class CouponPurchaseController extends AbstractController
             return $this->json(['message' => 'Durée invalide (attendu: 60/90/120)'], 400);
         }
 
-        // Grille tarifaire : (classLevel, subject, duration, actif)
         /** @var Tariff|null $tariff */
         $tariff = $em->getRepository(Tariff::class)->findOneBy([
-            'classLevel'      => $child->getClassLevel()->value,   // si enum: même type ici
+            'classLevel'      => $child->getClassLevel()->value, // Tariff stocke une string
             'subject'         => $subject,
             'durationMinutes' => $duration,
             'isActive'        => true,
@@ -62,7 +61,6 @@ final class CouponPurchaseController extends AbstractController
             return $this->json(['message' => 'Aucun tarif pour cette combinaison'], 422);
         }
 
-        // Prix unitaire selon l’éligibilité du parent au crédit d’impôt
         /** @var \App\Entity\User $parent */
         $parent = $this->getUser();
 
@@ -72,14 +70,10 @@ final class CouponPurchaseController extends AbstractController
 
         $created = [];
         for ($i = 0; $i < $quantity; $i++) {
-            // Génération d’un code stable et peu collisionnant
             $code = $gen->generate([
                 $child->getId(),
                 $subject->getId(),
-                // si enum : ->value ; si string : cast
-                method_exists($child->getClassLevel(), 'value')
-                    ? $child->getClassLevel()->value
-                    : (string) $child->getClassLevel(),
+                $child->getClassLevel()->value, // enum -> string
                 (string) $duration,
             ]);
 
@@ -87,7 +81,7 @@ final class CouponPurchaseController extends AbstractController
                 ->setCode($code)
                 ->setChild($child)
                 ->setSubject($subject)
-                ->setClassLevel($child->getClassLevel())
+                ->setClassLevel($child->getClassLevel()) // <-- enum directement
                 ->setDurationMinutes($duration)
                 ->setRemainingMinutes($duration)
                 ->setStatus(CouponStatus::NEW)
