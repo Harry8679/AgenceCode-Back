@@ -203,4 +203,10 @@ class Coupon
         }
         return $this;
     }
+
+    public function getUnitPriceParentCents(): int { return $this->unitPriceParentCents; }
+    public function setUnitPriceParentCents(int $c): self { $this->unitPriceParentCents = $c; return $this; }
+
+    public function getUnitPriceTeacherCents(): int { return $this->unitPriceTeacherCents; }
+    public function setUnitPriceTeacherCents(int $c): self { $this->unitPriceTeacherCents = $c; return $this; }
 }
