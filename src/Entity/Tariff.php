@@ -6,6 +6,7 @@ use ApiPlatform\Metadata as API;
 use App\Repository\TariffRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TariffRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_tariff_combo', columns: ['subject_id','class_level','duration_minutes'])]
@@ -28,39 +29,48 @@ class Tariff
     #[Groups(['tariff:read'])]
     private ?int $id = null;
 
-    // tu peux convertir plus tard en enum si tu veux
+    // Classe (stockée ici en string)
     #[ORM\Column(length: 255)]
     #[Groups(['tariff:read','tariff:write'])]
+    #[Assert\NotBlank]
     private ?string $classLevel = null;
 
     #[ORM\ManyToOne(inversedBy: 'tariffs')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['tariff:read','tariff:write'])]
+    #[Assert\NotNull]
     private ?Subject $subject = null;
 
-    // prix en centimes AVANT crédit d’impôt
+    // Prix parent AVANT crédit d’impôt (en centimes)
     #[ORM\Column(options: ['unsigned' => true])]
     #[Groups(['tariff:read','tariff:write'])]
+    #[Assert\NotNull]
+    #[Assert\Positive]
     private ?int $priceCentsBeforeCredit = null;
 
-    // prix en centimes APRÈS crédit d’impôt
+    // Prix parent APRÈS crédit d’impôt (en centimes)
     #[ORM\Column(options: ['unsigned' => true])]
     #[Groups(['tariff:read','tariff:write'])]
+    #[Assert\NotNull]
+    #[Assert\Positive]
     private ?int $priceCentsAfterCredit = null;
 
+    // Durée du cours (60, 90, 120…)
     #[ORM\Column(options: ['unsigned' => true])]
     #[Groups(['tariff:read','tariff:write'])]
+    #[Assert\NotNull]
+    #[Assert\Positive]
     private ?int $durationMinutes = null;
 
     #[ORM\Column]
     #[Groups(['tariff:read','tariff:write'])]
     private bool $isActive = true;
 
-    // ✅ NOUVEAU : ce que tu paies au prof pour ce coupon
-    #[ORM\Column(options: ['unsigned' => true])]
+    // ✅ Tarif versé au professeur (en centimes)
+    // on autorise NULL en BDD pour compat, mais on le valide côté contrôleur
+    #[ORM\Column(options: ['unsigned' => true], nullable: true)]
     #[Groups(['tariff:read','tariff:write'])]
     private ?int $teacherRateCents = null;
-
 
     // --- getters/setters ---
 
@@ -85,5 +95,5 @@ class Tariff
     public function setIsActive(bool $active): static { $this->isActive = $active; return $this; }
 
     public function getTeacherRateCents(): ?int { return $this->teacherRateCents; }
-    public function setTeacherRateCents(int $cents): self { $this->teacherRateCents = $cents; return $this; }
+    public function setTeacherRateCents(?int $cents): self { $this->teacherRateCents = $cents; return $this; }
 }
