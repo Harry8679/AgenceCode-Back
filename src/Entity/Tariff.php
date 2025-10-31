@@ -56,6 +56,12 @@ class Tariff
     #[Groups(['tariff:read','tariff:write'])]
     private bool $isActive = true;
 
+    // ✅ NOUVEAU : ce que tu paies au prof pour ce coupon
+    #[ORM\Column(options: ['unsigned' => true])]
+    #[Groups(['tariff:read','tariff:write'])]
+    private ?int $teacherRateCents = null;
+
+
     // --- getters/setters ---
 
     public function getId(): ?int { return $this->id; }
