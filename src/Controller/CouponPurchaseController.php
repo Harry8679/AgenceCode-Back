@@ -30,10 +30,12 @@ final class CouponPurchaseController extends AbstractController
         // on accepte IRIs (/api/children/2) ou ids "2"
         $childId   = (int) basename((string)($data['child']   ?? ''));
         $subjectId = (int) basename((string)($data['subject'] ?? ''));
-        $duration  = (int)($data['duration'] ?? 0);      // 60, 90, 120
+        $duration  = (int)($data['duration'] ?? 0); // 60/90/120
         $quantity  = max(1, (int)($data['quantity'] ?? 1));
 
+        /** @var Child|null $child */
         $child   = $em->getRepository(Child::class)->find($childId);
+        /** @var Subject|null $subject */
         $subject = $em->getRepository(Subject::class)->find($subjectId);
 
         if (!$child || !$subject) {
@@ -64,28 +66,43 @@ final class CouponPurchaseController extends AbstractController
         /** @var \App\Entity\User $parent */
         $parent = $this->getUser();
 
+        // prix parent (après/avant crédit d’impôt selon éligibilité)
         $unitPriceCents = $parent->isTaxCreditEligible()
             ? (int) $tariff->getPriceCentsAfterCredit()
             : (int) $tariff->getPriceCentsBeforeCredit();
 
+        // ✅ prix prof depuis la grille
+        $teacherRate = (int) ($tariff->getTeacherRateCents() ?? 0);
+        if ($teacherRate <= 0) {
+            return $this->json(['message' => 'Tarif professeur manquant pour cette combinaison'], 422);
+        }
+
         $created = [];
         for ($i = 0; $i < $quantity; $i++) {
-            $code = $gen->generate([
-                $child->getId(),
-                $subject->getId(),
-                $child->getClassLevel()->value, // enum -> string
-                (string) $duration,
-            ]);
+            // Génère un code et évite (rarement) une collision
+            do {
+                $code = $gen->generate([
+                    $child->getId(),
+                    $subject->getId(),
+                    $child->getClassLevel()->value,
+                    (string) $duration,
+                    microtime(true) . '-' . $i, // un peu d’entropie
+                ]);
+                $exists = $em->getRepository(Coupon::class)->findOneBy(['code' => $code]);
+            } while ($exists);
 
             $coupon = (new Coupon())
                 ->setCode($code)
                 ->setChild($child)
                 ->setSubject($subject)
-                ->setClassLevel($child->getClassLevel()) // <-- enum directement
+                ->setClassLevel($child->getClassLevel()) // enum directement
                 ->setDurationMinutes($duration)
                 ->setRemainingMinutes($duration)
                 ->setStatus(CouponStatus::NEW)
-                ->setPurchasedAt(new \DateTimeImmutable());
+                ->setPurchasedAt(new \DateTimeImmutable())
+                // snapshots de prix
+                ->setUnitPriceParentCents($unitPriceCents)
+                ->setUnitPriceTeacherCents($teacherRate);
 
             $em->persist($coupon);
 
