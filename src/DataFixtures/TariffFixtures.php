@@ -21,10 +21,56 @@ class TariffFixtures extends Fixture implements FixtureGroupInterface
         $tariffRepo  = $manager->getRepository(Tariff::class);
 
         $rows = [
+            // 6 eme
             ['classLevel' => '6e', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
             ['classLevel' => '6e', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
             ['classLevel' => '6e', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
             ['classLevel' => '6e', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // 5 eme
+            ['classLevel' => '5e', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '5e', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '5e', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '5e', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // 4 eme
+            ['classLevel' => '4e', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '4e', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '4e', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '4e', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // 3 eme
+            ['classLevel' => '3e', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '3e', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '3e', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '3e', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // 2nd
+            ['classLevel' => '2nde', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '2nde', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '2nde', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '2nde', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // 1 ere
+            ['classLevel' => '1ère', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '1ère', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '1ère', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => '1ère', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // Terminale
+            ['classLevel' => 'Terminale', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Terminale', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Terminale', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Terminale', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // License 1
+            ['classLevel' => 'Bac+1', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+1', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+1', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+1', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // License 2
+            ['classLevel' => 'Bac+2', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+2', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+2', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+2', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            // License 3
+            ['classLevel' => 'Bac+3', 'subjectName' => 'Mathématiques', 'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+3', 'subjectName' => 'Physique',       'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+3', 'subjectName' => 'Chimie',         'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
+            ['classLevel' => 'Bac+3', 'subjectName' => 'Informatique',   'duration' => 60, 'before' => 4600, 'after' => 2200, 'active' => true],
         ];
 
         foreach ($rows as $r) {
