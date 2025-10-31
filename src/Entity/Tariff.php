@@ -83,4 +83,7 @@ class Tariff
 
     public function isActive(): bool { return $this->isActive; }
     public function setIsActive(bool $active): static { $this->isActive = $active; return $this; }
+
+    public function getTeacherRateCents(): ?int { return $this->teacherRateCents; }
+    public function setTeacherRateCents(int $cents): self { $this->teacherRateCents = $cents; return $this; }
 }
