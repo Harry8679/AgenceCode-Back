@@ -63,6 +63,13 @@ class Coupon
     #[ORM\OneToMany(targetEntity: CouponUsage::class, mappedBy: 'coupon')]
     private Collection $couponUsages;
 
+    // ✅ Snapshot des prix au moment de l'achat (pour l'historique)
+    #[ORM\Column(options: ['unsigned' => true])]
+    private int $unitPriceParentCents = 0;
+
+    #[ORM\Column(options: ['unsigned' => true])]
+    private int $unitPriceTeacherCents = 0;
+
     public function __construct()
     {
         $this->couponUsages = new ArrayCollection();
