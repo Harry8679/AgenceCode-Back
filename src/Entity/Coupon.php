@@ -12,6 +12,7 @@ use App\Repository\CouponRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
 #[ApiResource(
@@ -29,45 +30,57 @@ class Coupon
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['coupon:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 16)]
+    #[Groups(['coupon:read'])]
     private ?string $code = null;
 
     #[ORM\ManyToOne(inversedBy: 'coupons')]
-    private ?Child $child = null;
+    #[Groups(['coupon:read'])]
+    private ?Child $child = null;            // will serialize as IRI unless Child has groups too
 
     #[ORM\ManyToOne(inversedBy: 'coupons')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Subject $subject = null;
+    #[Groups(['coupon:read'])]
+    private ?Subject $subject = null;        // IRI unless Subject has groups too
 
     #[ORM\Column(enumType: ClassLevel::class)]
+    #[Groups(['coupon:read'])]
     private ?ClassLevel $classLevel = null;
 
     #[ORM\Column]
+    #[Groups(['coupon:read'])]
     private ?int $durationMinutes = null;
 
     #[ORM\Column]
+    #[Groups(['coupon:read'])]
     private ?int $remainingMinutes = null;
 
     #[ORM\Column(enumType: CouponStatus::class)]
+    #[Groups(['coupon:read'])]
     private ?CouponStatus $status = null;
 
     #[ORM\Column]
+    #[Groups(['coupon:read'])]
     private ?\DateTimeImmutable $purchasedAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['coupon:read'])]
     private ?\DateTimeImmutable $lastUsedAt = null;
 
     /** @var Collection<int, CouponUsage> */
     #[ORM\OneToMany(targetEntity: CouponUsage::class, mappedBy: 'coupon')]
     private Collection $couponUsages;
 
-    // ✅ Snapshot des prix au moment de l'achat (pour l'historique)
+    // snapshots de prix
     #[ORM\Column(options: ['unsigned' => true])]
+    #[Groups(['coupon:read'])]
     private int $unitPriceParentCents = 0;
 
     #[ORM\Column(options: ['unsigned' => true])]
+    #[Groups(['coupon:read'])]
     private int $unitPriceTeacherCents = 0;
 
     public function __construct()
