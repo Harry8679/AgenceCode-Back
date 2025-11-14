@@ -1,5 +1,5 @@
 <?php
-// src/Api/Provider/MyAssignmentsProvider.php
+
 namespace App\Api\Provider;
 
 use ApiPlatform\Metadata\Operation;
@@ -15,19 +15,35 @@ final class MyAssignmentsProvider implements ProviderInterface
         private Security $security
     ) {}
 
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): iterable|object|null
     {
         $user = $this->security->getUser();
-        if (!$user) return [];
+        if (!$user) {
+            return [];
+        }
 
-        // Exemple: renvoyer les affectations où le user est prof OU parent de l’enfant
-        $qb = $this->em->getRepository(TeacherAssignment::class)->createQueryBuilder('a')
-            ->leftJoin('a.teacher', 't')
-            ->leftJoin('a.child', 'c')
-            ->leftJoin('c.parent', 'p')
-            ->andWhere('t = :u OR p = :u')
-            ->setParameter('u', $user);
+        $repo = $this->em->getRepository(TeacherAssignment::class);
 
-        return $qb->getQuery()->getResult();
+        // Parent: on liste tout ce qui touche ses enfants
+        if (in_array('ROLE_PARENT', $user->getRoles(), true)) {
+            return $repo->createQueryBuilder('a')
+                ->join('a.child', 'c')
+                ->andWhere('c.parent = :u')
+                ->setParameter('u', $user)
+                ->getQuery()
+                ->getResult();
+        }
+
+        // Teacher: on liste ce qui le concerne
+        if (in_array('ROLE_TEACHER', $user->getRoles(), true)) {
+            return $repo->findBy(['teacher' => $user]);
+        }
+
+        // Admin: tout
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+            return $repo->findAll();
+        }
+
+        return [];
     }
 }
